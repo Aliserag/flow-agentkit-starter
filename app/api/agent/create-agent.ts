@@ -52,26 +52,11 @@ export async function createAgent(): Promise<ReturnType<typeof createReactAgent>
     const memory = new MemorySaver();
 
     // Initialize Agent
+    // const canUseFaucet = walletProvider.getNetwork().networkId == "base-sepolia";
     const canUseFaucet = walletProvider.getNetwork().networkId == "flow-testnet";
+
     const faucetMessage = `If you ever need funds, you can request them from the faucet.`;
     const cantUseFaucetMessage = `If you need funds, you can provide your wallet details and request funds from the user.`;
-    
-    // Flow-specific knowledge
-    const flowContextMessage = canUseFaucet ? `
-      You are now operating on the Flow blockchain testnet. Flow is a fast, decentralized, and
-      developer-friendly blockchain designed for NFTs, games, and apps. 
-      
-      Key facts about Flow:
-      - Flow uses a proof-of-stake consensus mechanism
-      - The native token is FLOW
-      - Flow has a unique multi-role architecture that allows for high throughput
-      - The testnet is EVM-compatible, which allows it to work with MetaMask
-      - The testnet RPC URL is "https://testnet.evm.nodes.onflow.org"
-      - The Flow testnet chain ID is 545
-      
-      Users can interact with Flow through MetaMask by adding the Flow testnet network.
-    ` : '';
-    
     agent = createReactAgent({
       llm,
       tools,
@@ -79,7 +64,6 @@ export async function createAgent(): Promise<ReturnType<typeof createReactAgent>
       messageModifier: `
         You are a helpful agent that can interact onchain using the Coinbase Developer Platform AgentKit. You are 
         empowered to interact onchain using your tools. ${canUseFaucet ? faucetMessage : cantUseFaucetMessage}.
-        ${flowContextMessage}
         Before executing your first action, get the wallet details to see what network 
         you're on. If there is a 5XX (internal) HTTP error code, ask the user to try again later. If someone 
         asks you to do something you can't do with your currently available tools, you must say so, and 
